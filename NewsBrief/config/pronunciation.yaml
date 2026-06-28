@@ -1,0 +1,27 @@
+# config/pronunciation.yaml
+# SSML pronunciation dictionary for ElevenLabs TTS
+# Format: word -> SSML phoneme or say-as replacement
+# Managed by the pipeline; new words flagged in pronunciation_log table
+
+proper_nouns:
+  Hormuz: '<phoneme alphabet="ipa" ph="hɔːɹˈmuːz">Hormuz</phoneme>'
+  Netanyahu: '<phoneme alphabet="ipa" ph="nɛtɑnˈjɑːhuː">Netanyahu</phoneme>'
+  Pulte: '<phoneme alphabet="ipa" ph="ˈpʌltiː">Pulte</phoneme>'
+  Shahed: '<phoneme alphabet="ipa" ph="ʃɑːˈhɛd">Shahed</phoneme>'
+  CENTCOM: '<phoneme alphabet="ipa" ph="ˈsɛntkɒm">CENTCOM</phoneme>'
+  Uppsala: '<phoneme alphabet="ipa" ph="ˈʊpsɑːlɑː">Uppsala</phoneme>'
+  COGNOSCERE: '<phoneme alphabet="ipa" ph="kɒɡˈnɒʃɛɹeɪ">COGNOSCERE</phoneme>'
+  CIFaaS: '<say-as interpret-as="characters">CIF</say-as>aas'
+
+acronyms:
+  speak_as_word:
+    - NATO
+    - FEMA
+    - CENTCOM
+  spell_out:
+    - ICE
+    - SEC
+    - IPO
+    - NSO
+    - FBI
+    - CIA

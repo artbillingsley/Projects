@@ -1,0 +1,17 @@
+[{{ brief_type }}] {{ date }} - {{ upload_count }}/{{ total_platforms }} platforms posted
+
+Issue #{{ issue_number }} | Duration: {{ duration }}
+
+UPLOADS:
+{% for upload in uploads %}
+  {{ "%-22s"|format(upload.platform) }} {{ upload.status|upper }}  {{ upload.url or '' }}
+{% endfor %}
+
+COSTS:
+  ElevenLabs: {{ elevenlabs_chars }} chars (~${{ elevenlabs_cost }})
+  Claude API: {{ llm_input_tokens }} in / {{ llm_output_tokens }} out (~${{ llm_cost }})
+
+ARCHIVE: {{ drive_url or 'N/A' }}
+{% if pronunciation_new is defined and pronunciation_new > 0 %}
+PRONUNCIATION: {{ pronunciation_new }} new words flagged for review
+{% endif %}

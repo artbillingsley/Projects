@@ -1,0 +1,20 @@
+COGNOSCERE Daily Brief -- {{ date }} | Issue #{{ issue_number }}
+
+{{ today_in_one_breath }}
+
+STORIES COVERED:
+{% for story in stories %}
+{{ story.headline }} [{{ story.cif_tag }}]
+{% endfor %}
+
+---
+Every source cited. Every claim tagged. Read the full record:
+{{ base_url }}/news/{{ date_slug }}/?utm_source=youtube&utm_medium=video&utm_campaign=cdb-{{ date_slug }}&utm_content={{ content_id }}
+
+Subscribe to the daily email: https://cognoscerellc.substack.com/?utm_source=youtube&utm_medium=video&utm_campaign=cdb-{{ date_slug }}&utm_content={{ content_id }}
+CIFaaS intelligence platform: https://cifaas.cognoscerellc.com/?utm_source=youtube&utm_medium=video&utm_campaign=cdb-{{ date_slug }}&utm_content={{ content_id }}
+
+COGNOSCERE LLC | A Service-Disabled Veteran-Owned Small Business
+Green Cove Springs, Florida
+
+#DailyBrief #Intelligence #News #COGNOSCERE

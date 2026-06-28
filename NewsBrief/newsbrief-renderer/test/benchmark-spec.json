@@ -1,0 +1,80 @@
+{
+  "spec": {
+    "brief_id": 0,
+    "date": "2026-01-01",
+    "issue_number": "N000",
+    "slots": [
+      {
+        "type": "HOOK",
+        "copy": "An American helicopter is down near the Strait of Hormuz.",
+        "audio_file": "",
+        "words": [
+          {"word": "An", "start": 0.0, "end": 0.15},
+          {"word": "American", "start": 0.2, "end": 0.7},
+          {"word": "helicopter", "start": 0.75, "end": 1.3},
+          {"word": "is", "start": 1.35, "end": 1.5},
+          {"word": "down", "start": 1.55, "end": 1.9}
+        ],
+        "duration_seconds": 10.0,
+        "gfx": {"cif_tag": "CIF-TEST", "status": "DEVELOPING"}
+      },
+      {
+        "type": "LEAD",
+        "copy": "Iran shot down a U.S. Army Apache near the Strait of Hormuz. The most serious direct exchange since the ceasefire.",
+        "audio_file": "",
+        "words": [
+          {"word": "Iran", "start": 0.0, "end": 0.35},
+          {"word": "shot", "start": 0.4, "end": 0.6},
+          {"word": "down", "start": 0.65, "end": 0.9}
+        ],
+        "duration_seconds": 15.0,
+        "gfx": {"cif_tag": "CIF-TEST", "status": "DEVELOPING", "confidence": "High", "sources": ["Reuters", "AP"], "headline": "U.S. and Iran Trade Strikes Near Hormuz"}
+      },
+      {
+        "type": "SCAN",
+        "intro_copy": "Two more, fast.",
+        "items": [
+          {"number": 1, "copy": "The House sent Trump a seventy billion dollar immigration bill.", "cif_tag": "CIF-T1", "status": "NEW", "extractable": false, "clip_id": null},
+          {"number": 2, "copy": "Gas sits at four sixteen a gallon.", "cif_tag": "CIF-T2", "status": "NEW", "extractable": true, "clip_id": "C2"}
+        ],
+        "audio_file": "",
+        "words": [
+          {"word": "Two", "start": 0.0, "end": 0.3},
+          {"word": "more,", "start": 0.35, "end": 0.5},
+          {"word": "fast.", "start": 0.55, "end": 0.8},
+          {"word": "One.", "start": 1.0, "end": 1.3},
+          {"word": "The", "start": 1.4, "end": 1.5},
+          {"word": "Two.", "start": 5.0, "end": 5.3}
+        ],
+        "duration_seconds": 10.0
+      },
+      {
+        "type": "WHY",
+        "copy": "Here is the thread. The war near Hormuz is the same war showing up in your gas tank.",
+        "audio_file": "",
+        "words": [
+          {"word": "Here", "start": 0.0, "end": 0.2},
+          {"word": "is", "start": 0.25, "end": 0.35},
+          {"word": "the", "start": 0.4, "end": 0.5},
+          {"word": "thread.", "start": 0.55, "end": 0.9}
+        ],
+        "duration_seconds": 8.0
+      },
+      {
+        "type": "CLOSE",
+        "copy": "That is the brief. Decide.",
+        "audio_file": "",
+        "words": [
+          {"word": "That", "start": 0.0, "end": 0.2},
+          {"word": "is", "start": 0.25, "end": 0.35}
+        ],
+        "duration_seconds": 7.0
+      }
+    ],
+    "clips": [
+      {"id": "C1", "title": "Test Lead", "slots": ["HOOK", "LEAD"], "platform_meta": {}},
+      {"id": "T0", "title": "One Breath", "slots": ["HOOK"], "platform_meta": {}}
+    ],
+    "render_targets": ["anchor-16x9", "anchor-9x16", "C1", "T0", "thumbnail"]
+  }
+}

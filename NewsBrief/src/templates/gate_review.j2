@@ -1,0 +1,30 @@
+[NewsBrief] Review Required - {{ date }} | Issue #{{ issue_number }}
+
+PUBLISH MODE: {{ publish_mode }}
+{% if requires_review %}
+REASON: Unknown proper nouns in HOOK/LEAD: {{ unknown_words|join(', ') }}
+{% endif %}
+
+--- SCRIPT ---
+
+[HOOK]
+{{ hook }}
+
+[LEAD]
+{{ lead }}
+
+[SCAN]
+{{ scan }}
+
+[WHY IT MATTERS]
+{{ why }}
+
+[CLOSE]
+{{ close }}
+
+---
+
+Word count: {{ word_count }}
+
+To approve: python src/run.py --date {{ date }} --approve
+To kill: python src/run.py --date {{ date }} --kill

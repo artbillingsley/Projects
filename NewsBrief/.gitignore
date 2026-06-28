@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.env
+*.egg-info/
+dist/
+build/
+.venv/
+.pytest_cache/
+tmp/
+logs/
+config/gdrive-sa-key.json
+node_modules/

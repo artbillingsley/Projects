@@ -1,0 +1,14 @@
+[{{ brief_type }}] FAILED - {{ date }} - Stage: {{ failed_stage }}
+
+Issue #{{ issue_number | default('N/A') }} | Failed at: {{ failed_stage }} after {{ duration }}
+
+ERROR: {{ error_message }}
+
+ACTION REQUIRED:
+{% if brief_type == 'TechBrief' %}
+  - Manual re-run: python -m src.run_tech --approve --date {{ date }}
+  - Check logs: logs/techbrief-{{ date }}.log
+{% else %}
+  - Manual re-run: python -m src.run --approve --date {{ date }}
+  - Check logs: logs/newsbrief-{{ date }}.log
+{% endif %}
