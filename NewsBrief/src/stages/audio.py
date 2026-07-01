@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, List
 
 from src.lib.elevenlabs import SlotAudio, generate_slot_audio
-from src.lib.pronunciation import GateResult, PronunciationDict, check_proper_noun_gate
+from src.lib.pronunciation import GateResult, PronunciationDict, check_proper_noun_gate, inject_ssml
 from src.stages.script import ScriptResult
 
 
@@ -36,14 +36,14 @@ def generate_all_audio(
     # 1. Run the proper-noun gate on HOOK + LEAD text first
     gate_result = check_proper_noun_gate(script.hook, script.lead, pronunciation)
 
-    # 2. Build clean text for each of the 5 slots (no SSML injection)
+    # 2. Build text for each of the 5 slots with SSML pronunciation injection
     scan_text = script.scan_intro + " " + " ".join(script.scan_items)
     slot_texts = [
-        ("HOOK", script.hook),
-        ("LEAD", script.lead),
-        ("SCAN", scan_text),
-        ("WHY", script.why),
-        ("CLOSE", script.close),
+        ("HOOK", inject_ssml(script.hook, pronunciation)),
+        ("LEAD", inject_ssml(script.lead, pronunciation)),
+        ("SCAN", inject_ssml(scan_text, pronunciation)),
+        ("WHY", inject_ssml(script.why, pronunciation)),
+        ("CLOSE", inject_ssml(script.close, pronunciation)),
     ]
 
     # 3. Ensure output directory exists
