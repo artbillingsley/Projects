@@ -12,6 +12,12 @@ log = structlog.get_logger()
 
 GRAPH_API = "https://graph.facebook.com/v25.0"
 
+# Base URL for serving video files via nginx for Instagram hosted-URL upload.
+# The nginx location /tmp-video/ aliases to the newsbrief tmp/ directory.
+IG_VIDEO_BASE_URL = os.environ.get(
+    "IG_VIDEO_BASE_URL", "https://cifaas.cognoscerellc.com/tmp-video"
+)
+
 
 def upload_reel(
     ig_account_id: str,
@@ -20,69 +26,71 @@ def upload_reel(
     caption: str,
     max_poll_seconds: int = 300,
 ) -> Dict[str, str]:
-    """Upload a Reel to Instagram via resumable direct upload."""
+    """Upload a Reel to Instagram via hosted video URL.
+
+    The video must be served over HTTPS at a publicly accessible URL.
+    We use the nginx /tmp-video/ location on cifaas.cognoscerellc.com
+    which maps to the newsbrief tmp/ directory.
+    """
     file_size = os.path.getsize(file_path)
     log.info("instagram.reel.upload.start", file_size=file_size)
 
-    # Step 1: Create container with resumable upload type
+    # Build public URL from the file path
+    # file_path looks like: /home/ec2-user/newsbrief/tmp/2026-07-03/anchor-9x16.mp4
+    # We need the part after /tmp/: 2026-07-03/anchor-9x16.mp4
+    tmp_idx = file_path.find("/tmp/")
+    if tmp_idx >= 0:
+        relative = file_path[tmp_idx + 5:]  # skip "/tmp/"
+    else:
+        relative = os.path.basename(file_path)
+    video_url = "%s/%s" % (IG_VIDEO_BASE_URL.rstrip("/"), relative)
+    log.info("instagram.video_url", url=video_url)
+
+    # Step 1: Create container with video_url (hosted method)
     resp = requests.post(
-        f"{GRAPH_API}/{ig_account_id}/media",
+        "%s/%s/media" % (GRAPH_API, ig_account_id),
         data={
             "media_type": "REELS",
-            "upload_type": "resumable",
+            "video_url": video_url,
             "caption": caption,
             "access_token": access_token,
         },
         timeout=60,
     )
     resp.raise_for_status()
-    resp_data = resp.json()
-    container_id = resp_data["id"]
-    upload_uri = resp_data["uri"]
-    log.info("instagram.container.created", container_id=container_id, upload_uri=upload_uri)
+    container_id = resp.json()["id"]
+    log.info("instagram.container.created", container_id=container_id)
 
-    # Step 2: PUT binary to the URI returned by container creation
-    with open(file_path, "rb") as f:
-        put_resp = requests.put(
-            upload_uri,
-            data=f,
-            headers={
-                "Authorization": f"OAuth {access_token}",
-                "offset": "0",
-                "file_size": str(file_size),
-                "Content-Type": "application/octet-stream",
-            },
-            timeout=300,
-        )
-    put_resp.raise_for_status()
-    log.info("instagram.binary.uploaded", container_id=container_id)
-
-    # Step 3: Poll until ready
+    # Step 2: Poll until ready
     start = time.monotonic()
     while time.monotonic() - start < max_poll_seconds:
         status_resp = requests.get(
-            f"{GRAPH_API}/{container_id}",
-            params={"fields": "status_code", "access_token": access_token},
+            "%s/%s" % (GRAPH_API, container_id),
+            params={"fields": "status_code,status", "access_token": access_token},
             timeout=30,
         )
         status_resp.raise_for_status()
-        status_code = status_resp.json().get("status_code", "")
+        data = status_resp.json()
+        status_code = data.get("status_code", "")
 
         if status_code == "FINISHED":
             break
         elif status_code == "ERROR":
-            raise RuntimeError(f"Instagram container {container_id} failed processing")
+            error_msg = data.get("status", "unknown error")
+            raise RuntimeError(
+                "Instagram container %s failed: %s" % (container_id, error_msg)
+            )
 
         log.info("instagram.polling", status=status_code)
         time.sleep(10)
     else:
         raise TimeoutError(
-            f"Instagram container {container_id} stuck after {max_poll_seconds}s"
+            "Instagram container %s stuck after %ds" % (container_id, max_poll_seconds)
         )
 
-    # Step 4: Publish
+    # Step 3: Publish
     pub_resp = requests.post(
-        f"{GRAPH_API}/{ig_account_id}/media_publish",
+        "%s/%s/media_publish" % (GRAPH_API, ig_account_id),
         data={"creation_id": container_id, "access_token": access_token},
         timeout=60,
     )
@@ -90,4 +98,4 @@ def upload_reel(
     media_id = pub_resp.json().get("id", "")
 
     log.info("instagram.reel.upload.done", media_id=media_id)
-    return {"platform_id": media_id, "platform_url": f"https://instagram.com/reel/{media_id}"}
+    return {"platform_id": media_id, "platform_url": "https://instagram.com/reel/%s" % media_id}
