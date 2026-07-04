@@ -207,6 +207,9 @@ def _upload_facebook_reel(output_dir: str, spec: Dict, config: Any, youtube_url:
         comment = f"COGNOSCERE {label} \u2014 {date}\n\n{bullet_lines}"
         if youtube_url:
             comment += f"\n\n\u25b6 Watch on YouTube Shorts: {youtube_url}"
+        comment += "\n\nhttps://www.cognoscerellc.com/news"
+        comment += "\nhttps://cifaas.cognoscerellc.com"
+        comment += "\nhttps://cognoscerellc.substack.com"
         try:
             post_comment(
                 post_id=result["platform_id"],
@@ -219,12 +222,12 @@ def _upload_facebook_reel(output_dir: str, spec: Dict, config: Any, youtube_url:
     return result
 
 
-def _upload_instagram_reel(output_dir: str, spec: Dict, config: Any) -> Dict[str, str]:
+def _upload_instagram_reel(output_dir: str, spec: Dict, config: Any, youtube_url: str = "") -> Dict[str, str]:
     from src.lib.platforms.instagram import upload_reel
     from src.lib.captions import build_caption
 
     file_path = _find_short_clip(output_dir) or ""
-    caption = build_caption(spec, platform="instagram")
+    caption = build_caption(spec, platform="instagram", youtube_url=youtube_url)
     return upload_reel(
         ig_account_id=getattr(config, "instagram_account_id", ""),
         access_token=getattr(config, "facebook_access_token", ""),
@@ -324,7 +327,7 @@ def upload_all(
         log.info("post.upload.start", platform=platform_name)
         try:
             fn = getattr(_self, fn_name)
-            if platform_name in ("linkedin_video", "facebook_reel", "bluesky_post"):
+            if platform_name in ("linkedin_video", "facebook_reel", "instagram_reel", "bluesky_post"):
                 data = fn(output_dir, spec, config, youtube_url=youtube_short_url)
             else:
                 data = fn(output_dir, spec, config)

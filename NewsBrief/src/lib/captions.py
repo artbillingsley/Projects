@@ -126,18 +126,24 @@ def _extract_headlines(spec: Dict) -> List[str]:
     return headlines
 
 
+_WEBSITE_LINKS = [
+    "https://www.cognoscerellc.com/news",
+    "https://cifaas.cognoscerellc.com",
+    "https://cognoscerellc.substack.com",
+]
+
+
+def _website_block() -> str:
+    """Return formatted website links block."""
+    return "\n".join(_WEBSITE_LINKS)
+
+
 def build_caption(
     spec: Dict,
     platform: str,
     youtube_url: str = "",
 ) -> str:
-    """Build a platform-appropriate caption from spec data.
-
-    Platforms:
-        instagram — no links, hashtags for discoverability
-        facebook  — includes YouTube URL, hashtags, Decide. sign-off
-        linkedin  — includes YouTube URL, headline bullets
-    """
+    """Build a platform-appropriate caption from spec data."""
     date = spec.get("date", "")
     headlines = _extract_headlines(spec)
     source_names = spec.get("source_names", [])
@@ -157,13 +163,16 @@ def build_caption(
         if source_names:
             parts.append(f"Sources: {dot_sep.join(source_names)}")
             parts.append("")
-        parts.append("Decide.")
+        if youtube_url:
+            parts.append(f"\u25b6 Watch on YouTube Shorts: {youtube_url}")
+            parts.append("")
+        parts.append(_website_block())
         parts.append("")
         parts.append("#news #dailybrief #COGNOSCERE #newsbrief")
         return "\n".join(parts)
 
     if platform == "bluesky":
-        # 300 char limit — lead headline + YouTube link + sign-off
+        # 300 char limit — lead headline + link
         lead = headlines[0] if headlines else ""
         parts = [
             f"COGNOSCERE {label} \u2014 {date}",
@@ -174,7 +183,7 @@ def build_caption(
             parts.append("")
             parts.append(youtube_url)
         parts.append("")
-        parts.append("Decide.")
+        parts.append("https://www.cognoscerellc.com/news")
         return "\n".join(parts)[:300]
 
     if platform == "linkedin":
@@ -185,11 +194,28 @@ def build_caption(
             "",
             bullet_lines,
             "",
-            "#news #dailybrief #COGNOSCERE #newsbrief",
         ]
         if youtube_url:
-            parts.append("")
             parts.append(f"\u25b6 Watch on YouTube Shorts: {youtube_url}")
+            parts.append("")
+        parts.append(_website_block())
+        parts.append("")
+        parts.append("#news #dailybrief #COGNOSCERE #newsbrief")
+        return "\n".join(parts)
+
+    if platform == "youtube":
+        parts = [
+            f"COGNOSCERE {label} \u2014 {date}",
+            "",
+            bullet_lines,
+            "",
+        ]
+        if source_names:
+            parts.append(f"Sources: {dot_sep.join(source_names)}")
+            parts.append("")
+        parts.append(_website_block())
+        parts.append("")
+        parts.append("#news #dailybrief #COGNOSCERE #newsbrief")
         return "\n".join(parts)
 
     # facebook and default
@@ -202,10 +228,10 @@ def build_caption(
     if source_names:
         parts.append(f"Sources: {dot_sep.join(source_names)}")
         parts.append("")
-    parts.append("Decide.")
     if youtube_url:
-        parts.append("")
         parts.append(f"\u25b6 Watch on YouTube Shorts: {youtube_url}")
+        parts.append("")
+    parts.append(_website_block())
     parts.append("")
     parts.append("#news #dailybrief #COGNOSCERE #newsbrief")
     return "\n".join(parts)
